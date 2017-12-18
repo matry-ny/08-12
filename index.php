@@ -1,4 +1,4 @@
 Some data
-Other string
+Other string added conflicting data
 Third string
 Next line from test branch
