@@ -35,3 +35,18 @@ foreach ($array as &$value) {
     $value += 1;
 }
 var_dump($array);
+
+echo '<hr>';
+
+function parseValues($string, array $array) {
+    $results = 0;
+    foreach ($array as $value) {
+        if (stripos($string, $value)) {
+            $results++;
+        }
+    }
+
+    return $results;
+}
+$values = parseValues('test string 4 parsing', 'string');
+var_dump($values);

@@ -1,12 +1,14 @@
 <?php
 
-function validate($value, $callback)
+function validate($value, Closure $callback)
 {
     return $callback($value);
 }
 
 $attributes = [
-    'name' => 'is_string',
+    'name' => function ($value) {
+        return is_string($value);
+    },
     'phone' => function ($value) {
         $regexp = '/\+38\s\(0\d{2}\)\s\d{3}\-\d{2}\-\d{2}/';
         return (bool)preg_match($regexp, $value);
@@ -30,10 +32,10 @@ foreach ($data as $key => $value) {
     var_dump($result);
 }
 
-function filterInt($value)
-{
-    return is_int($value);
-}
-
-$filtered = array_filter($data, 'filterInt');
-var_dump($filtered);
+//function filterInt($value)
+//{
+//    return is_int($value);
+//}
+//
+//$filtered = array_filter($data, 'filterInt');
+//var_dump($filtered);
