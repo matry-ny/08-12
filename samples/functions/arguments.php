@@ -67,3 +67,29 @@ function newSummary($var, $some, ...$data)
 }
 $summary2 = newSummary('test', 'qwerty', 1, 4, 6, 8, 1);
 var_dump($summary2);
+
+echo '<hr>';
+
+function toArray(...$data)
+{
+    return $data;
+}
+var_dump(toArray(1, 3, 4)[1]);
+list($var1, $var2, $var3) = toArray(4, 5, 6, 4, 7, 8, 9);
+var_dump($var1, $var2, $var3);
+
+echo '<hr>';
+
+function someStaticData()
+{
+    static $qwerty = 0;
+
+    $qwerty++;
+
+    return $qwerty;
+}
+
+var_dump(someStaticData());
+var_dump(someStaticData());
+var_dump(someStaticData());
+var_dump(someStaticData());
