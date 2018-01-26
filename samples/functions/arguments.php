@@ -50,3 +50,20 @@ function parseValues($string, array $array) {
 }
 $values = parseValues('test string 4 parsing', ['string']);
 var_dump($values);
+
+echo '<hr>';
+
+function oldSummary()
+{
+    return array_sum(func_get_args());
+}
+$summary = oldSummary(1, 3, 5, 6);
+var_dump($summary);
+
+function newSummary($var, $some, ...$data)
+{
+    var_dump($var, $some);
+    return array_sum($data);
+}
+$summary2 = newSummary('test', 'qwerty', 1, 4, 6, 8, 1);
+var_dump($summary2);
