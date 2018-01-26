@@ -48,5 +48,5 @@ function parseValues($string, array $array) {
 
     return $results;
 }
-$values = parseValues('test string 4 parsing', 'string');
+$values = parseValues('test string 4 parsing', ['string']);
 var_dump($values);
