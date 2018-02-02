@@ -6,6 +6,11 @@ function dispatch($url, $controllersPath, $baseUrl = null)
         $url = substr($url, strlen($baseUrl));
     }
 
+    $getParamsStart = stripos($url, '?');
+    if ($getParamsStart !== false) {
+        $url = substr($url, 0, $getParamsStart);
+    }
+
     $parts = explode('/', trim($url, '/'));
 
     $controller = "{$controllersPath}/{$parts[0]}.php";
@@ -20,5 +25,5 @@ function dispatch($url, $controllersPath, $baseUrl = null)
         die("Action '{$parts[1]}' is not allowed in controller '{$parts[0]}'");
     }
 
-    $action();
+    return $action();
 }
