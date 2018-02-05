@@ -28,6 +28,29 @@ function actionView()
     $file = urldecode($_GET['path']);
     $fileResource = fopen($file, 'r');
 
+    $contentType = mime_content_type($file);
+    $activeTypes = [
+        'application/pdf',
+        'application/zip'
+    ];
+    $downloadableTypes = [
+        'application/zip'
+    ];
+
+    if (in_array($contentType, $activeTypes)) {
+        header("Content-Type: {$contentType}");
+        header('Content-Length: ' . filesize($file));
+        if (in_array($contentType, $downloadableTypes)) {
+            header('Content-Description: File Transfer');
+            header('Content-Disposition: attachment; filename="' . basename($file) . '"');
+        }
+
+        while ($part = fread($fileResource, 2)) {
+            echo $part;
+        }
+        exit;
+    }
+
     $content = '';
     while ($part = fread($fileResource, 2)) {
         $content .= htmlspecialchars($part);
