@@ -14,6 +14,7 @@
 </head>
 <body>
 <main role="main" class="container">
+    <a href="<?= toUrl('guest/logout') ?>" class="btn btn-danger">Sign Out</a>
     <?= $content ?>
 </main>
 

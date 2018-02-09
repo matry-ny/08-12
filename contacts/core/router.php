@@ -12,6 +12,7 @@ function dispatch($url, $controllersPath, $baseUrl = null)
     }
 
     $parts = explode('/', trim($url, '/'));
+    $parts = isGuest() ? prepareGuestParts($parts) : prepareUserParts($parts);
 
     $controller = "{$controllersPath}/{$parts[0]}.php";
     if (!file_exists($controller)) {
@@ -26,4 +27,27 @@ function dispatch($url, $controllersPath, $baseUrl = null)
     }
 
     return $action();
+}
+
+/**
+ * @param array $parts
+ * @return array
+ */
+function prepareGuestParts(array $parts)
+{
+    $action = "{$parts[0]}/{$parts[1]}";
+    if (!in_array($action, config('guestPages'))) {
+        return ['guest', 'login'];
+    }
+
+    return $parts;
+}
+
+/**
+ * @param array $parts
+ * @return array
+ */
+function prepareUserParts(array $parts)
+{
+    return $parts;
 }

@@ -18,7 +18,7 @@ array_push($array, 2);
 unset($array[2]);
 
 $requiredIndex = array_key_exists(2, $array) ? $array[2] : 'ERROR';
-echo "Required index #2: {$requiredIndex}<br>";
+echo "Required guest #2: {$requiredIndex}<br>";
 
 $valueExists = in_array(10, $array) ? 'OK' : 'ERROR';
 echo "Required value '10': {$valueExists}<br>";
