@@ -10,7 +10,7 @@
 
 <form action="<?= toUrl('/files/uploadFile') ?>" method="post" enctype="multipart/form-data">
     <input type="hidden" name="path" value="<?= $path ?>">
-    <input type="file" name="file">
+    <input type="file" name="file[]" multiple>
 
     <input type="submit" value="Upload" class="btn btn-success">
 </form>

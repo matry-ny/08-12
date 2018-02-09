@@ -28,29 +28,6 @@ function actionView()
     $file = urldecode($_GET['path']);
     $fileResource = fopen($file, 'r');
 
-    $contentType = mime_content_type($file);
-    $activeTypes = [
-        'application/pdf',
-        'application/zip'
-    ];
-    $downloadableTypes = [
-        'application/zip'
-    ];
-
-    if (in_array($contentType, $activeTypes)) {
-        header("Content-Type: {$contentType}");
-        header('Content-Length: ' . filesize($file));
-        if (in_array($contentType, $downloadableTypes)) {
-            header('Content-Description: File Transfer');
-            header('Content-Disposition: attachment; filename="' . basename($file) . '"');
-        }
-
-        while ($part = fread($fileResource, 2)) {
-            echo $part;
-        }
-        exit;
-    }
-
     $content = '';
     while ($part = fread($fileResource, 2)) {
         $content .= htmlspecialchars($part);
@@ -82,16 +59,55 @@ function actionCreateDir()
     redirect(toUrl('/files/list?path=' . urlencode($newDir)));
 }
 
+function actionDeleteDir()
+{
+    $dir = urldecode($_GET['path']);
+
+    rmdir("$dir");
+
+    redirect(toUrl('/files/list?path=' . urlencode(pathinfo($dir, PATHINFO_DIRNAME))));
+}
+
+function actionDeleteFile()
+{
+    $file = urldecode($_GET['path']);
+    unlink("$file");
+
+    redirect(toUrl('/files/list?path=' . dirname($file)));
+}
+
 function actionUploadFile()
 {
+    error_reporting(E_ALL);
+
     if (empty($_FILES)) {
         return render('files/upload-file', ['path' => $_GET['path']]);
     }
 
-    $fileData = $_FILES['file'];
+    if ($_FILES['file']['tmp_name'][0]) {
+        $filesArray = reArrayFiles($_FILES['file']);
 
-    $file = "{$_POST['path']}/{$fileData['name']}";
-    move_uploaded_file($fileData['tmp_name'], $file);
+        foreach ($filesArray as $file) {
+            $files = "{$_POST['path']}/{$file['name']}";
+            move_uploaded_file($file['tmp_name'], $files);
+        }
+    }
 
-    redirect(toUrl('/files/view?path=' . urlencode($file)));
+    redirect(toUrl('/files/list?path=' . urlencode($_POST['path'])));
 }
+
+function reArrayFiles(&$file_post) {
+
+    $filesArray = array();
+    $file_count = count($file_post['name']);
+    $file_keys = array_keys($file_post);
+
+    for ($i=0; $i<$file_count; $i++) {
+        foreach ($file_keys as $key) {
+            $filesArray[$i][$key] = $file_post[$key][$i];
+        }
+    }
+
+    return $filesArray;
+}
+
