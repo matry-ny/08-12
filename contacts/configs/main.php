@@ -14,5 +14,11 @@ return [
         'guest/createAccount'
     ],
     'databasePath' => "{$basePath}/database",
-    'modelsPath' => "{$basePath}/models"
+    'modelsPath' => "{$basePath}/models",
+    'db' => [
+        'host' => 'localhost',
+        'user' => '0812_usr',
+        'password' => '0812_Pass',
+        'db' => '0812_samples'
+    ]
 ];

@@ -1,6 +1,6 @@
 <?php
 
-require_once config('modelsPath') . '/user.php';
+setUpModel('user');
 
 function actionLogin()
 {
