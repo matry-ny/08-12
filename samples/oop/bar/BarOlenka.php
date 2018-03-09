@@ -1,7 +1,23 @@
 <?php
 
+namespace App;
+
+/**
+ * Class BarOlenka
+ * @package app
+ */
 class BarOlenka extends Bar implements Smoky, Gentleman
 {
+    use FaceControl, CleaningManager {
+        CleaningManager::getName insteadof FaceControl;
+        FaceControl::getName as faceControlName;
+    }
+
+    public function __construct()
+    {
+        echo $this->getName(), $this->faceControlName();
+    }
+
     public function getMenu()
     {
         $menu = [];

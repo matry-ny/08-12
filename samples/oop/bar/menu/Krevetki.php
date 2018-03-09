@@ -1,5 +1,11 @@
 <?php
 
-class menu_Krevetki extends menu_MenuItem
+namespace app\menu;
+
+/**
+ * Class Krevetki
+ * @package app\menu
+ */
+class Krevetki extends MenuItem
 {
 }

@@ -1,5 +1,11 @@
 <?php
 
+namespace app;
+
+/**
+ * Class Solod
+ * @package app
+ */
 class Solod
 {
     private $type;

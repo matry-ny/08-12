@@ -1,5 +1,11 @@
 <?php
 
+namespace app;
+
+/**
+ * Class Water
+ * @package app
+ */
 class Water
 {
     private $composition;

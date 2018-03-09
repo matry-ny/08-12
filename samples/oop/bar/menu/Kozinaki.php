@@ -1,5 +1,11 @@
 <?php
 
-class menu_Kozinaki extends menu_MenuItem
+namespace app\menu;
+
+/**
+ * Class Kozinaki
+ * @package app\menu
+ */
+class Kozinaki extends MenuItem
 {
 }

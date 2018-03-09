@@ -1,5 +1,11 @@
 <?php
 
-class menu_Beer extends menu_MenuItem
+namespace app\menu;
+
+/**
+ * Class Beer
+ * @package app\menu
+ */
+class Beer extends MenuItem
 {
 }

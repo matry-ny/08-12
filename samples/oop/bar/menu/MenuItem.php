@@ -1,6 +1,12 @@
 <?php
 
-abstract class menu_MenuItem
+namespace app\menu;
+
+/**
+ * Class MenuItem
+ * @package app\menu
+ */
+abstract class MenuItem
 {
     private $title;
     private $weight;

@@ -1,13 +1,24 @@
 <?php
 
-require_once __DIR__ . '/autoload.php';
+require_once __DIR__ . '/lib/ClassLoader.php';
+$loader = new \app\lib\ClassLoader(__DIR__, 'app');
+
+spl_autoload_register([$loader, 'load']);
+
+use App\{BarOlenka, BarCrazyOlenka};
+use app\menu\{Cheese, Beer};
+use app\foods\Cheese as CheeseFood;
+
+new CheeseFood();
 
 $bar = new BarOlenka();
 
-$obolonBeer = new menu_Beer('Obolon', 0.5, 20);
+var_dump($bar->isAdult(mt_rand(5, 100)));
+
+$obolonBeer = new Beer('Obolon', 0.5, 20);
 $bar->addMenuItem($obolonBeer);
 
-$kosichkaChese = new menu_Cheese('Kosichka', 200, 50.98);
+$kosichkaChese = new Cheese('Kosichka', 200, 50.98);
 $bar->addMenuItem($kosichkaChese);
 
 echo $bar->getMenu();

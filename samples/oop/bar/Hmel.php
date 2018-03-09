@@ -1,5 +1,11 @@
 <?php
 
+namespace app;
+
+/**
+ * Class Hmel
+ * @package app
+ */
 class Hmel
 {
     private $country;

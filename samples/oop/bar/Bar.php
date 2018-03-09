@@ -1,13 +1,21 @@
 <?php
 
+namespace app;
+
+use app\menu\MenuItem;
+
+/**
+ * Class Bar
+ * @package app
+ */
 abstract class Bar implements Gentleman
 {
     /**
-     * @var menu_MenuItem[]
+     * @var MenuItem[]
      */
     protected $menu = [];
 
-    public function addMenuItem(menu_MenuItem $menuItem)
+    public function addMenuItem(MenuItem $menuItem)
     {
         $this->menu[] = $menuItem;
     }
