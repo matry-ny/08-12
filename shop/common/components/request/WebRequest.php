@@ -2,10 +2,6 @@
 
 namespace app\common\components\request;
 
-use app\common\Application;
-use app\common\components\Controller;
-use app\common\helper\StringHelper;
-
 /**
  * Class WebRequest
  * @package app\common\components\request
@@ -24,44 +20,11 @@ class WebRequest extends Request
     }
 
     /**
-     * @param string $part
-     * @return Controller
-     * @throws \Exception
+     * @param mixed $params
+     * @return array
      */
-    private function prepareController(string $part): Controller
+    protected function prepareParams($params): array
     {
-        $part = $part ?: Application::get()->param('controllers.default');
-        $class = vsprintf('%s\%sController', [
-            Application::get()->param('controllers.namespace'),
-            StringHelper::camelize($part)
-        ]);
-
-        if (!class_exists($class)) {
-            throw new \Exception("Controller '{$part}' is not exists");
-        }
-
-        $controllerObject = new $class();
-        if (!$controllerObject instanceof Controller) {
-            throw new \Exception("Controller '{$part}' is invalid");
-        }
-
-        return $controllerObject;
-    }
-
-    /**
-     * @param string $part
-     * @return string
-     * @throws \Exception
-     */
-    private function prepareAction(string $part): string
-    {
-        $part = $part ?: Application::get()->param('actions.default');
-        $action = 'action' . StringHelper::camelize($part);
-
-        if (!method_exists($this->controller, $action)) {
-            throw new \Exception("Action '{$part}' is not exists");
-        }
-
-        return $action;
+        return [];
     }
 }

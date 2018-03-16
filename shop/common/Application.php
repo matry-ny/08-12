@@ -5,6 +5,7 @@ namespace app\common;
 use Exception;
 use app\common\components\request\Parser;
 use app\common\helper\ArrayHelper;
+use PDO;
 
 /**
  * Class Application
@@ -32,10 +33,10 @@ class Application
 
     /**
      * @param array $config
-     * @return Application
+     * @return string
      * @throws Exception
      */
-    public static function init(array $config): Application
+    public static function init(array $config): string
     {
         if (null !== self::$app) {
             throw new Exception('Application is already created');
@@ -43,9 +44,7 @@ class Application
 
         self::$app = new self();
         self::$app->config = $config;
-        self::$app->run();
-
-        return self::$app;
+        return self::$app->run();
     }
 
     /**
@@ -69,7 +68,7 @@ class Application
         $action = $request->getAction();
         $params = $request->getParams();
 
-        return call_user_func([$controller, $action], $params);
+        return call_user_func_array([$controller, $action], $params);
     }
 
     /**
@@ -79,5 +78,26 @@ class Application
     public function param(string $key)
     {
         return ArrayHelper::getValue($key, $this->config);
+    }
+
+    /**
+     * @var null|PDO
+     */
+    private $db = null;
+
+    /**
+     * @return PDO
+     */
+    public function getDb(): PDO
+    {
+        if (null === $this->db) {
+            $this->db = new PDO(
+                "mysql:host={$this->param('db.host')};dbname={$this->param('db.name')}",
+                $this->param('db.user'),
+                $this->param('db.password')
+            );
+        }
+
+        return $this->db;
     }
 }
