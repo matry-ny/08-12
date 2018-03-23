@@ -2,6 +2,7 @@
 
 namespace app\common;
 
+use app\common\components\Database;
 use Exception;
 use app\common\components\request\Parser;
 use app\common\helper\ArrayHelper;
@@ -81,20 +82,21 @@ class Application
     }
 
     /**
-     * @var null|PDO
+     * @var null|Database
      */
     private $db = null;
 
     /**
-     * @return PDO
+     * @return Database
      */
-    public function getDb(): PDO
+    public function getDb(): Database
     {
         if (null === $this->db) {
-            $this->db = new PDO(
-                "mysql:host={$this->param('db.host')};dbname={$this->param('db.name')}",
+            $this->db = new Database(
+                $this->param('db.host'),
                 $this->param('db.user'),
-                $this->param('db.password')
+                $this->param('db.password'),
+                $this->param('db.name')
             );
         }
 

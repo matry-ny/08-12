@@ -2,6 +2,7 @@
 
 namespace app\web\controllers;
 
+use app\common\Application;
 use app\common\components\Controller;
 
 /**
@@ -12,6 +13,26 @@ class TestController extends Controller
 {
     public function actionQwerty()
     {
-        var_dump(12);
+//        $result = Application::get()
+//            ->getDb()
+//            ->insert('test', [
+//                'title' => 'Some string 2',
+//                'author' => 'Dmytro Kotenko 2'
+//            ])->execute();
+
+        $result = Application::get()
+            ->getDb()
+            ->update(
+                'test',
+                ['title' => 'Updated w', 'author' => 'Other Man 2']
+            )
+            ->where('')
+            ->andWhere('')
+            ->orWhere('')
+            ->execute();
+
+        var_dump($result);
+
+        exit;
     }
 }
