@@ -2,30 +2,25 @@
         
 namespace app\console\migrations;
 
-use app\common\Application;
+use app\common\components\db\Migration;
 use app\common\components\MigratableIntarface;
 
 /**
  * Class m1521222713_create_users_table
  * @package app\console\migrations
  */
-class m1521222713_create_users_table implements MigratableIntarface
+class m1521222713_create_users_table extends Migration implements MigratableIntarface
 {
     public function up()
     {
-        $sql = <<<SQL
-CREATE TABLE users (
-  id INT(11) AUTO_INCREMENT,
-  name VARCHAR(255),
-  PRIMARY KEY (id)
-)
-SQL;
-        Application::get()->getDb()->query($sql)->execute();
+        $this->createTable('users', [
+            $this->integer('id', 11)->autoIncrement()->primaryKey(),
+            $this->varchar('name', 255)
+        ]);
     }
     
     public function down()
     {
-        $sql = 'DROP TABLE users';
-        Application::get()->getDb()->query($sql)->execute();
+        $this->dropTable('users');
     }
 }

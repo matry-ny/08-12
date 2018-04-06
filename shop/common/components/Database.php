@@ -3,10 +3,6 @@
 namespace app\common\components;
 
 use PDO;
-use app\common\components\db\Builder;
-use app\common\components\db\commands\{
-    AbstractCommand, Insert, Update
-};
 
 /**
  * Class Database
@@ -15,9 +11,24 @@ use app\common\components\db\commands\{
 class Database
 {
     /**
-     * @var null|PDO
+     * @var string
      */
-    private $connect = null;
+    private $host;
+
+    /**
+     * @var string
+     */
+    private $user;
+
+    /**
+     * @var string
+     */
+    private $password;
+
+    /**
+     * @var string
+     */
+    private $db;
 
     /**
      * Database constructor.
@@ -26,35 +37,36 @@ class Database
      * @param string $password
      * @param string $db
      */
-    public function __construct(string $host, string $user, string $password, string $db)
+    public function __construct($host, $user, $password, $db)
     {
-        $this->connect = new PDO("mysql:host={$host};dbname={$db}", $user, $password);
+        $this->host = $host;
+        $this->user = $user;
+        $this->password = $password;
+        $this->db = $db;
     }
 
     /**
-     * @param string $table
-     * @param array $data
-     * @return Insert|AbstractCommand
-     * @throws \Exception
+     * @var null|PDO
      */
-    public function insert(string $table, array $data): Insert
+    private $connection = null;
+
+    /**
+     * @return string
+     */
+    public function getDataBaseName()
     {
-        /** @var Insert $builder */
-        $builder = Builder::build(Builder::INSERT, $this->connect);
-        return $builder->table($table)->columns($data);
+        return $this->db;
     }
 
     /**
-     * @param string $table
-     * @param array $data
-     * @param array $conditions
-     * @return AbstractCommand
-     * @throws \Exception
+     * @return PDO
      */
-    public function update(string $table, array $data, array $conditions = [])
+    public function getConnection()
     {
-        /** @var Update $builder */
-        $builder = Builder::build(Builder::UPDATE, $this->connect);
-        return $builder->table($table)->columns($data)->where($conditions);
+        if ($this->connection === null) {
+            $this->connection = new PDO("mysql:host={$this->host};dbname={$this->db}", $this->user, $this->password);
+        }
+
+        return $this->connection;
     }
 }

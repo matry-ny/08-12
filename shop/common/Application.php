@@ -6,7 +6,6 @@ use app\common\components\Database;
 use Exception;
 use app\common\components\request\Parser;
 use app\common\helper\ArrayHelper;
-use PDO;
 
 /**
  * Class Application
@@ -84,22 +83,22 @@ class Application
     /**
      * @var null|Database
      */
-    private $db = null;
+    private static $db = null;
 
     /**
      * @return Database
      */
-    public function getDb(): Database
+    public static function getDb(): Database
     {
-        if (null === $this->db) {
-            $this->db = new Database(
-                $this->param('db.host'),
-                $this->param('db.user'),
-                $this->param('db.password'),
-                $this->param('db.name')
+        if (null === self::$db) {
+            self::$db = new Database(
+                ArrayHelper::getValue('db.host', self::$app->config),
+                ArrayHelper::getValue('db.user', self::$app->config),
+                ArrayHelper::getValue('db.password', self::$app->config),
+                ArrayHelper::getValue('db.name', self::$app->config)
             );
         }
 
-        return $this->db;
+        return self::$db;
     }
 }

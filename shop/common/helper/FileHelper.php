@@ -10,13 +10,15 @@ class FileHelper
 {
     /**
      * @param string $dir
+     * @param bool $withExt
+     * @param array $excluded
      * @return array
      */
-    public static function getList(string $dir, $withExt = true): array
+    public static function getList(string $dir, $withExt = true, $excluded = []): array
     {
         $elements = scandir($dir);
-        $elements = array_filter($elements, function ($item) {
-            return !in_array($item, ['.', '..']);
+        $elements = array_filter($elements, function ($item) use ($excluded) {
+            return !in_array($item, array_merge(['.', '..'], $excluded));
         });
 
         if (false === $withExt) {

@@ -14,6 +14,22 @@ use app\console\models\Migration;
  */
 class MigrateController extends Controller
 {
+    /**
+     * @var string
+     */
+    private $migrationsDir;
+
+    /**
+     * @var string
+     */
+    private $migrationsNamespace;
+
+    public function __construct()
+    {
+        $this->migrationsDir = Application::get()->param('migrations.dir');
+        $this->migrationsNamespace = Application::get()->param('migrations.namespace');
+    }
+
     public function actionCreate($name)
     {
         $time = time();
@@ -25,13 +41,14 @@ class MigrateController extends Controller
         
 namespace {$namespace};
 
+use app\common\components\db\Migration;
 use app\common\components\MigratableIntarface
 
 /**
  * Class {$migration}
  * @package {$namespace}
  */
-class {$migration} implements MigratableIntarface
+class {$migration} extends Migration implements MigratableIntarface
 {
     public function up()
     {
@@ -51,39 +68,84 @@ PHP;
         return $this->lineOut("Migration '{$migration}' created successfully");
     }
 
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
     public function actionUp()
     {
-        $executed = $this->getModel()->getExecuted();
-        $all = FileHelper::getList(Application::get()->param('migrations.dir'), false);
-        $new = array_diff($all, $executed);
+        $executedMigrations = $this->getModel()->getExecuted();
+        $newMigrations = FileHelper::getList($this->migrationsDir, true, $executedMigrations);
 
-        if (empty($new)) {
-            return $this->lineOut('DB is up to date');
+        if (empty($newMigrations)) {
+            return $this->lineOut('Database is up to date');
         }
 
-        echo $this->lineOut('Executing ' . count($new) . ' migrations...');
-
-        $namespace = Application::get()->param('migrations.namespace');
-        foreach ($new as $migration) {
-            $name = str_replace('.php', '', $migration);
-            $class = $namespace . '\\' . $name;
-            $object = new $class();
-
-            if (!$object instanceof MigratableIntarface) {
-                return $this->lineOut("Migration '{$name}' can not be processed");
+        foreach ($newMigrations as $migration) {
+            $migrationClass = $this->getMigrationClassName($migration);
+            if (!class_exists($migrationClass)) {
+                echo $this->lineOut("Migration '{$migration}' is not exists");
+                continue;
             }
 
-            $object->up();
-            $this->getModel()->up($name);
+            $migrationObject = new $migrationClass();
+            if (!$migrationObject instanceof MigratableIntarface) {
+                echo $this->lineOut("Migration '{$migration}' has incorrect format");
+                continue;
+            }
 
-            echo $this->lineOut("Migration '{$name}' done");
+            call_user_func([$migrationObject, 'up']);
+            $this->getModel()->saveMigration($migration);
+
+            echo $this->lineOut("Migration '{$migration}' executed");
         }
 
-        return $this->lineOut('DB is up to date');
+        return $this->lineOut('Database is up to date');
     }
 
-    public function actionDown()
+    /**
+     * @param int $limit
+     * @return string
+     * @throws \Exception
+     */
+    public function actionDown($limit = 1)
     {
+        $deprecatedMigrations = $this->getModel()->getExecuted($limit);
+        if (empty($deprecatedMigrations)) {
+            return $this->lineOut('Nothing to revert');
+        }
+
+        $reverted = 0;
+        foreach ($deprecatedMigrations as $migration) {
+            $migrationClass = $this->getMigrationClassName($migration);
+            if (!class_exists($migrationClass)) {
+                echo $this->lineOut("Migration '{$migration}' is not exists");
+                continue;
+            }
+
+            $migrationObject = new $migrationClass();
+            if (!$migrationObject instanceof MigratableIntarface) {
+                echo $this->lineOut("Migration '{$migration}' has incorrect format");
+                continue;
+            }
+
+            call_user_func([$migrationObject, 'down']);
+            $this->getModel()->revertMigration($migration);
+            $reverted++;
+
+            echo $this->lineOut("Migration '{$migration}' reverted");
+        }
+
+        return $this->lineOut("Reverted {$reverted} migrations");
+    }
+
+    /**
+     * @param string $migration
+     * @return string
+     */
+    private function getMigrationClassName($migration)
+    {
+        return vsprintf('\%s\%s', [$this->migrationsNamespace, substr($migration, 0, stripos($migration, '.php'))]);
     }
 
     /**

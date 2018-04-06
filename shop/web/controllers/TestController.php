@@ -2,8 +2,12 @@
 
 namespace app\web\controllers;
 
-use app\common\Application;
 use app\common\components\Controller;
+use app\common\components\db\events\Delete;
+use app\common\components\db\events\Insert;
+use app\common\components\db\events\Select;
+use app\common\components\db\events\Update;
+use app\common\components\db\Query;
 
 /**
  * Class TestController
@@ -11,28 +15,55 @@ use app\common\components\Controller;
  */
 class TestController extends Controller
 {
-    public function actionQwerty()
+    public function actionInsert()
     {
-//        $result = Application::get()
-//            ->getDb()
-//            ->insert('test', [
-//                'title' => 'Some string 2',
-//                'author' => 'Dmytro Kotenko 2'
-//            ])->execute();
-
-        $result = Application::get()
-            ->getDb()
-            ->update(
-                'test',
-                ['title' => 'Updated w', 'author' => 'Other Man 2']
-            )
-            ->where('')
-            ->andWhere('')
-            ->orWhere('')
+        /** @var Insert $builder */
+        $builder = (new Query())->getBuilder(Query::INSERT);
+        $result = $builder
+            ->insert(['title' => mt_rand(), 'author' => mt_rand() . '_Author'])
+            ->into('test')
             ->execute();
 
-        var_dump($result);
+        return "Result: {$result}";
+    }
 
-        exit;
+    public function actionUpdate()
+    {
+        /** @var Update $builder */
+        $builder = (new Query())->getBuilder(Query::UPDATE);
+        $result = $builder
+            ->update('test')
+            ->set(['title' => 'Updated' . mt_rand()])
+            ->where(['<=', 'id', 3])
+            ->execute();
+
+        return "Result: {$result}";
+    }
+
+    public function actionSelect()
+    {
+        /** @var Select $builder */
+        $builder = (new Query())->getBuilder(Query::SELECT);
+        $result = $builder
+            ->select(['*'])
+            ->from('test')
+            ->where(['<', 'id', 5])
+            ->andWhere(['>', 'id', 2])
+            ->all();
+
+        var_dump($result);exit;
+    }
+
+    public function actionDelete()
+    {
+        /** @var Delete $builder */
+        $builder = (new Query())->getBuilder(Query::DELETE);
+        $result = $builder
+            ->delete()
+            ->from('test')
+            ->where(['>', 'id', 6])
+            ->execute();
+
+        return "Result: {$result}";
     }
 }

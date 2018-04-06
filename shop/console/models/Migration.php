@@ -3,14 +3,14 @@
 namespace app\console\models;
 
 use app\common\Application;
-use app\common\components\Model;
-use PDO;
+use app\common\components\db\Expression;
+use app\common\components\db\events\Select;
 
 /**
  * Class Migration
  * @package app\console\models
  */
-class Migration extends Model
+class Migration extends \app\common\components\db\Migration
 {
     public function __construct()
     {
@@ -30,45 +30,57 @@ class Migration extends Model
     {
         $table = Application::get()->param('migrations.table');
 
-        $sql = 'SHOW TABLES LIKE :table_name';
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->bindParam(':table_name', $table, PDO::PARAM_STR);
+        /** @var Select $isInitiated */
+        $isInitiated = $this
+            ->select(['table_name'])
+            ->from('information_schema.tables')
+            ->where([
+                ['=', 'table_schema', Application::getDb()->getDataBaseName()],
+                ['=', 'table_name', $this->tableName()]
+        ]);
 
-        $result = $stmt->execute();
-        $exists = $result && $stmt->rowCount();
-
-        if (!$exists) {
-            $sql = <<<SQL
-CREATE TABLE {$table} (
-  id INT(11) AUTO_INCREMENT,
-  migration VARCHAR(255),
-  execution_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id)
-)
-SQL;
-            $this->getConnection()->query($sql)->execute();
+        if (!$isInitiated->exists()) {
+            $this->createTable($table, [
+                $this->integer('id', 11)->autoIncrement()->primaryKey(),
+                $this->varchar('migration', 255),
+                $this->timestamp('execution_date')->defaultValue(new Expression('CURRENT_TIMESTAMP'))
+            ]);
         }
     }
 
     /**
+     * @param int|null $limit
      * @return array
      * @throws \Exception
      */
-    public function getExecuted(): array
+    public function getExecuted($limit = null): array
     {
-        $sql = "SELECT migration FROM {$this->tableName()}";
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->execute();
+        /** @var Select $query */
+        $query = $this->select(['migration'])->from($this->tableName());
+        if ($limit) {
+            $query->limit($limit);
+        }
 
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        return $query->orderBy('execution_date', SORT_DESC)->column();
     }
 
-    public function up($name)
+    /**
+     * @param string $migration
+     * @return int
+     * @throws \Exception
+     */
+    public function saveMigration($migration)
     {
-        $sql = "INSERT INTO {$this->tableName()} (migration) VALUES (:migration)";
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->bindParam(':migration', $name, PDO::PARAM_STR);
+        return $this->insert($this->tableName(), ['migration' => $migration]);
+    }
 
-        $stmt->execute();
+    /**
+     * @param string $migration
+     * @return int
+     * @throws \Exception
+     */
+    public function revertMigration($migration)
+    {
+        return $this->delete($this->tableName(), [['=', 'migration', $migration]], 1);
     }
 }
