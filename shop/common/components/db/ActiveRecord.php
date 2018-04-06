@@ -64,9 +64,12 @@ abstract class ActiveRecord extends Model
      * @param array $conditions
      * @return static[]
      */
-    public static function findAll(array $conditions)
+    public static function findAll(array $conditions = [])
     {
-        $query = self::find()->where($conditions);
+        $query = self::find();
+        if ($conditions) {
+            $query->where($conditions);
+        }
 
         $models = [];
         foreach ($query->all() as $row) {
@@ -172,6 +175,7 @@ abstract class ActiveRecord extends Model
 
     /**
      * @return bool
+     * @throws \Exception
      */
     public function clear()
     {
