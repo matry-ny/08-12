@@ -17,12 +17,14 @@ class TestController extends Controller
 {
     public function actionInsert()
     {
-        /** @var Insert $builder */
-        $builder = (new Query())->getBuilder(Query::INSERT);
-        $result = $builder
-            ->insert(['title' => mt_rand(), 'author' => mt_rand() . '_Author'])
-            ->into('test')
-            ->execute();
+        for ($i = 0; $i <= 10; $i++) {
+            /** @var Insert $builder */
+            $builder = (new Query())->getBuilder(Query::INSERT);
+            $result = $builder
+                ->insert(['title' => mt_rand(), 'author' => mt_rand() . '_Author'])
+                ->into('test')
+                ->execute();
+        }
 
         return "Result: {$result}";
     }
@@ -65,5 +67,18 @@ class TestController extends Controller
             ->execute();
 
         return "Result: {$result}";
+    }
+
+    public function actionBatchSelect()
+    {
+        /** @var Select $builder */
+        $builder = (new Query())->getBuilder(Query::SELECT);
+        $result = $builder->select(['*'])->from('test');
+
+        foreach ($result->each() as $index => $row) {
+            var_dump($index, $row);
+        }
+
+        return '';
     }
 }

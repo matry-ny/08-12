@@ -4,6 +4,7 @@ namespace app\common\components\db\events;
 
 use app\common\Application;
 use app\common\components\db\Command;
+use app\common\components\db\SelectIterator;
 use PDO;
 
 /**
@@ -38,6 +39,11 @@ class Select extends Command
     public function all()
     {
         return $this->execute()->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function each($stack = 100)
+    {
+        return new SelectIterator($this->build(), $stack);
     }
 
     /**
