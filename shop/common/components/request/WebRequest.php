@@ -2,6 +2,8 @@
 
 namespace app\common\components\request;
 
+use app\common\helper\ArrayHelper;
+
 /**
  * Class WebRequest
  * @package app\common\components\request
@@ -31,6 +33,17 @@ class WebRequest extends Request
      */
     protected function prepareParams($params): array
     {
-        return $params;
+        $reflectionController = new \ReflectionObject($this->controller);
+        $reflectionAction = $reflectionController->getMethod($this->action);
+        $reflectionArguments = $reflectionAction->getParameters();
+
+        $result = [];
+        foreach ($reflectionArguments as $argument) {
+            /** @var \ReflectionParameter $argument */
+            $default = $argument->isDefaultValueAvailable() ? $argument->getDefaultValue() : null;
+            $result[] = ArrayHelper::getValue($argument->name, $params, $default);
+        }
+
+        return $result;
     }
 }

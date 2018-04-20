@@ -8,6 +8,7 @@ use app\common\components\db\events\Insert;
 use app\common\components\db\events\Select;
 use app\common\components\db\events\Update;
 use app\common\components\db\Query;
+use app\common\components\enums\CliSapiNames;
 
 /**
  * Class TestController
@@ -80,5 +81,15 @@ class TestController extends Controller
         }
 
         return '';
+    }
+
+    public function actionParams($id, $title, $nonRequired = 123)
+    {
+        var_dump($id, $title, $nonRequired);
+
+        $cli = new CliSapiNames(CliSapiNames::CGI);
+        var_dump($cli->getConstList());
+
+        return $cli;
     }
 }
