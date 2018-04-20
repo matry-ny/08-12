@@ -2,13 +2,10 @@
 
 namespace app\web\controllers;
 
+use app\common\Application;
 use app\common\components\Controller;
-use app\common\components\db\events\Delete;
-use app\common\components\db\events\Insert;
-use app\common\components\db\events\Select;
-use app\common\components\db\events\Update;
-use app\common\components\db\Query;
 use app\common\components\enums\CliSapiNames;
+use dk\database\Query;
 
 /**
  * Class TestController
@@ -19,8 +16,8 @@ class TestController extends Controller
     public function actionInsert()
     {
         for ($i = 0; $i <= 10; $i++) {
-            /** @var Insert $builder */
-            $builder = (new Query())->getBuilder(Query::INSERT);
+            /** @var \dk\database\events\Insert $builder */
+            $builder = (new Query())->getBuilder(Query::INSERT, Application::getDb()->getConnection());
             $result = $builder
                 ->insert(['title' => mt_rand(), 'author' => mt_rand() . '_Author'])
                 ->into('test')
@@ -32,8 +29,8 @@ class TestController extends Controller
 
     public function actionUpdate()
     {
-        /** @var Update $builder */
-        $builder = (new Query())->getBuilder(Query::UPDATE);
+        /** @var \dk\database\events\Update $builder */
+        $builder = (new Query())->getBuilder(Query::UPDATE, Application::getDb()->getConnection());
         $result = $builder
             ->update('test')
             ->set(['title' => 'Updated' . mt_rand()])
@@ -45,8 +42,8 @@ class TestController extends Controller
 
     public function actionSelect()
     {
-        /** @var Select $builder */
-        $builder = (new Query())->getBuilder(Query::SELECT);
+        /** @var \dk\database\events\Select $builder */
+        $builder = (new Query())->getBuilder(Query::SELECT, Application::getDb()->getConnection());
         $result = $builder
             ->select(['*'])
             ->from('test')
@@ -59,8 +56,8 @@ class TestController extends Controller
 
     public function actionDelete()
     {
-        /** @var Delete $builder */
-        $builder = (new Query())->getBuilder(Query::DELETE);
+        /** @var \dk\database\events\Delete $builder */
+        $builder = (new Query())->getBuilder(Query::DELETE, Application::getDb()->getConnection());
         $result = $builder
             ->delete()
             ->from('test')
@@ -72,8 +69,8 @@ class TestController extends Controller
 
     public function actionBatchSelect()
     {
-        /** @var Select $builder */
-        $builder = (new Query())->getBuilder(Query::SELECT);
+        /** @var \dk\database\events\Select $builder */
+        $builder = (new Query())->getBuilder(Query::SELECT, Application::getDb()->getConnection());
         $result = $builder->select(['*'])->from('test');
 
         foreach ($result->each() as $index => $row) {

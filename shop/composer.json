@@ -1,4 +1,13 @@
 {
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@github.com:matry-ny/database-lib.git"
+    }
+  ],
+  "require": {
+    "dkotenko/database-lib": "dev-master"
+  },
   "autoload": {
     "psr-4": {
       "app\\": ""
