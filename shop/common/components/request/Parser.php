@@ -2,6 +2,7 @@
 
 namespace app\common\components\request;
 
+use app\common\Application;
 use app\common\components\enums\CliSapiNames;
 
 /**
@@ -23,7 +24,7 @@ class Parser
             global $argv;
             $request = new CliRequest($argv);
         } else {
-            $request = new WebRequest($_SERVER['REQUEST_URI']);
+            $request = new WebRequest($_SERVER['REQUEST_URI'], Application::get()->param('urlPrefix'));
         }
 
         return $request;

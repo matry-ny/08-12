@@ -3,6 +3,7 @@
 namespace app\common\components\request;
 
 use app\common\helper\ArrayHelper;
+use app\common\helper\StringHelper;
 
 /**
  * Class WebRequest
@@ -13,9 +14,11 @@ class WebRequest extends Request
     protected function parse(): void
     {
         $request = $this->request;
-        if (stripos($request, '?')) {
-            $request = substr($request, 0, stripos($request, '?'));
+        $request = StringHelper::stripAfter($request, '?');
+        if ($this->urlPrefix) {
+            $request = StringHelper::leftTrim($request, $this->urlPrefix);
         }
+
         $parts = explode('/', trim($request, " \t\n\r\0\x0B/"));
 
         $controllerPart = array_shift($parts);

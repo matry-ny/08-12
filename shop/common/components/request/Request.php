@@ -33,12 +33,19 @@ abstract class Request
     protected $params = [];
 
     /**
+     * @var null|string
+     */
+    protected $urlPrefix = null;
+
+    /**
      * Request constructor.
      * @param string|array $request
+     * @param string $urlPrefix
      */
-    public function __construct($request)
+    public function __construct($request, string $urlPrefix = null)
     {
         $this->request = $request;
+        $this->urlPrefix = $urlPrefix;
         $this->parse();
     }
 

@@ -24,4 +24,33 @@ class StringHelper
 
         return $result;
     }
+
+    /**
+     * @param string $string
+     * @param string $substring
+     * @return string
+     */
+    public static function stripAfter(string $string, string $substring): string
+    {
+        $substringPosition = stripos($string, $substring);
+        if ($substringPosition) {
+            $string = substr($string, 0, $substringPosition);
+        }
+
+        return $string;
+    }
+
+    /**
+     * @param string $string
+     * @param string $substring
+     * @return string
+     */
+    public static function leftTrim(string $string, string $substring): string
+    {
+        if (stripos($string, $substring) === 0) {
+            $string = substr($string, mb_strlen($substring));
+        }
+
+        return $string;
+    }
 }
