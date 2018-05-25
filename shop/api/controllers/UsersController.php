@@ -2,8 +2,8 @@
 
 namespace app\api\controllers;
 
-use app\common\components\Controller;
 use app\web\models\User;
+use app\api\components\Controller;
 
 /**
  * Class UsersController
