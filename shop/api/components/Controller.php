@@ -38,4 +38,13 @@ class Controller extends \app\common\components\Controller
         echo json_encode(['status' => $status, 'message' => $message]);
         exit;
     }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    protected function success($data): string
+    {
+        return json_encode(['status' => 200, 'data' => $data]);
+    }
 }
